@@ -54,6 +54,11 @@ pluralizelisttitles = "false"
   url = "/other/"
   weight = 80
 
+[[menu.main]]
+  name = 'biogogo.top'
+  url = 'https://lab.biogogo.top'
+  weight = 100
+
 [Params]
   # user-defined content
   # postSections for displaying recent posts 
