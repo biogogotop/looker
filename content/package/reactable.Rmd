@@ -1,0 +1,52 @@
+---
+output:
+  html_document: default
+  md_document: default
+---
+
+## basic 
+```{R}
+library(data.table)
+library(reactable)
+library(glue)
+library(magrittr)
+nicar <- fread('~/Downloads/nicar.csv')
+nicar <- nicar[, Resource := glue("<a title = '{What}' href='{TheURL}'>{What}</a>",.envir = .SD)][
+  ,.( Resource, Who, Tags,  Comments)]
+reactable(nicar)
+```
+
+## filter and search
+```{R}
+reactable(nicar, filterable = TRUE, showSortable = TRUE, 
+          searchable =  TRUE, showSortIcon = TRUE,
+          columns = list(
+            Resource = colDef(html = TRUE, resizable = TRUE),
+            Comments = colDef(show = FALSE)
+          )
+) 
+
+
+```
+
+## Row show/hide clickable
+```{R}
+html <- function(x, inline = FALSE) {
+  container <- if (inline) htmltools::span else htmltools::div
+  container(dangerouslySetInnerHTML = list("__html" = x))
+}
+reactable(nicar, filterable = TRUE, showSortable = TRUE,showPageSizeOptions =T,
+          columns = list(
+             Resource = colDef(html = TRUE, resizable = TRUE),
+             Comments = colDef(show = FALSE)
+          ),
+          # if there exists a comment, make row expandable
+          details = function(index) {
+            if(nicar$Comments[index] != "") {
+              htmltools::tagList(
+                html(nicar$Comments[index])
+              )
+            } 
+          }
+)
+```

@@ -1,5 +1,12 @@
----
-title: "{{ replace .Name "-" " " | title }}"
-date: {{ .Date }}
-draft: true
----
++++
+author = 'asepsiswu'
+title = "{{ replace .Name "-" " " | title }}"
+date =  {{.Date}}
+archives = "{{(now.Format "2006/01")}}" 
+tags = [
+    ""
+]
+categories = [
+    ""
+]
++++

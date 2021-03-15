@@ -1,0 +1,42 @@
++++
+author = 'asepsiswu'
+title = "janitor 包"
+#date = "2020-09-03"
+date = 2020-09-03T10:20:29+08:00
+archives = "2020/09" 
+tags = [ "" ]
+summary = "janitor clean_name可用 和get_dups"
++++
+## janitor 
+```{R}
+library(janitor)
+library(data.table)
+head(iris)
+dt <- data.table(iris)
+dt[, "x y z":='x y z']
+```
+## clean_name 将colname修改
+```{R}
+iris %>% clean_names() %>% head()
+```
+
+## data.table 中使用clean_name
+```{R}
+dt2 <- dt %>% clean_names()
+dt3 <- dt[,clean_names(.SD)]
+identical(dt2,dt3)
+dt2
+
+```
+## get_dupes 查重
+速度较慢
+```{R}
+get_dupes(dt[,1:3])
+```
+
+## tabyl: table function with data.frame 
+```{R}
+tabyl(mtcars,cyl, gear) %>% adorn_totals()
+tabyl(dt2, species, x_y_z) %>% adorn_title ()
+```
+

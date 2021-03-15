@@ -1,0 +1,110 @@
++++
+author = 'asepsiswu'
+title = "biomaRt 基因ID"
+#date = "2020-06-23"
+date = 2020-06-23T17:09:57+08:00
+archives = "2020/06" 
+tags = [ "biomaRt" ]
+summary = "基因ID转换"
++++
+## biomaRt
+```{R}
+library(biomaRt)
+library(data.table)
+library(magrittr)
+# use ENSEMBL_MART_ENSEMBL BioMart databases 
+listMarts()
+# use genes for datasets
+listEnsembl()
+
+```
+## construct biomaRt
+```{R}
+ENSEMBL <- useEnsembl(biomart = "ENSEMBL_MART_ENSEMBL", 
+                      dataset = "hsapiens_gene_ensembl")
+# or shortcut
+ensembl <- useEnsembl(biomart = "ensembl", 
+                      dataset = "hsapiens_gene_ensembl")
+
+identical(ENSEMBL, ensembl)
+
+str(ensembl)
+head(ensembl@filters[,1:2])
+searchFilters(mart = ensembl, pattern = "ensembl.*id")
+searchFilters(mart = ensembl, pattern = "entrezgene|hgnc")
+searchFilterValues(mart = ensembl, filter = "chromosome_name", pattern = "^GL")
+
+head(ensembl@attributes[,1:2])
+searchAttributes(mart = ensembl, pattern = "entrezgene|hgnc|unipro")
+```
+## key functions (not recommend)
+
+```{R}
+# keys function applicable to some function
+keys(ensembl, keytype="chromosome_name") %>% head()
+keys(ensembl,  keytype = 'entrezgene_id')
+keys(ensembl,  keytype = 'hgnc_symbol')
+
+```
+## getBM
+```{R}
+
+
+# example
+getBM(attributes =c('entrezgene_id', 'hgnc_symbol'),
+      filters = 'ensembl_gene_id', 
+      values = 'ENSG00000000003', 
+      mart = ensembl)
+getBM(attributes=c('entrezgene_id',  "hgnc_symbol", 'ensembl_gene_id_version', 
+                   'band','external_gene_name', 'hgnc_id',
+                   'ensembl_transcript_id_version', 'transcript_length'  ),
+      filters=c("hgnc_symbol"),
+      values=list('TP53'), mart=ensembl)
+
+#  Attributes from multiple attribute pages are not allowed
+getBM(attributes=c('entrezgene_id',  "hgnc_symbol", 'ensembl_gene_id_version', 
+                   'band','external_gene_name', 'ensembl_transcript_id_version', 
+                   'transcript_length',  'external_gene_name',
+                   'transcript_gencode_basic', 'transcript_version','cds_length'),
+      filters=c("hgnc_symbol"),
+      values=list('TP53'), mart=ensembl)
+      
+# coffee time to fetch data
+GeneId <- getBM(attributes=c('entrezgene_id',  "hgnc_symbol",  "hgnc_id", 
+                                 'ensembl_gene_id_version', 'band' ),
+      filters=c("chromosome_name"),
+      values=list(c(1:22,'X','Y')), mart=ensembl)
+
+head(GeneId)
+# write.csv(GeneId,file = '/mnt/TCGA/rrefdb/GeneIdFromBiomaRt.csv')
+```
+## hgnc gene alias
+```{R}
+## curated gene name https://www.genenames.org/download/custom/
+genename.url <-
+    'https://www.genenames.org/cgi-bin/download/custom?col=gd_hgnc_id&col=gd_app_sym&col=gd_app_name&col=gd_status&col=gd_prev_sym&col=gd_aliases&col=gd_pub_chrom_map&col=gd_pub_acc_ids&col=gd_pub_refseq_ids&col=gd_pub_eg_id&col=gd_pub_ensembl_id&col=gd_name_aliases&status=Approved&status=Entry%20Withdrawn&hgnc_dbtag=on&order_by=gd_pub_ensembl_id&format=text&submit=submit'
+# hgnc <- fread(genename.url)
+# bash wget 'https://www.genenames.org/cgi-bin/download/custom?col=gd_hgnc_id&col=gd_app_sym&col=gd_app_name&col=gd_status&col=gd_prev_sym&col=gd_aliases&col=gd_pub_chrom_map&col=gd_pub_acc_ids&col=gd_pub_refseq_ids&col=gd_pub_eg_id&col=gd_pub_ensembl_id&col=gd_name_aliases&status=Approved&status=Entry%20Withdrawn&hgnc_dbtag=on&order_by=gd_pub_ensembl_id&format=text&submit=submit' -O HGNC.genename
+hgnc <- fread('/mnt/TCGA/rrefdb/hgnc.genealias')
+setnames(hgnc, gsub(" ",'_',names(hgnc)) )
+hgnc[Approved_symbol=='TP53']
+```
+
+## merge GeneID and hgnc alias
+
+```{R}
+# with some duplicate id
+GeneID <- merge(GeneId,hgnc,by.x = 'hgnc_id',by.y = 'HGNC_ID',all = T)
+```
+## useEnsembl 连接错误
+[SSL certificate problem: unable to get local issuer certificate #122](https://github.com/jeroen/curl/issues/122)
+```R
+# curl::curl_fetch_memory(url, handle = handle) : SSL certificate problem: unable to get local issuer certificate
+Sys.setenv(LIBCURL_BUILD="winssl")
+devtools::install_github('jeroen/curl')
+```
+依然报错， 重启后好了。也许与curl无关，可能是网络的原因。
+ubuntu 18.04 LTS不存在这个问题
+
+<!-- Sys.setenv("http_proxy" = "http://my.proxy.org:9999") -->
+<!-- options(RCurlOptions = list(proxy="uscache.kcc.com:80",proxyuserpwd="------:-------")) -->

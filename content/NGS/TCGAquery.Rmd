@@ -1,0 +1,63 @@
++++
+author = 'asepsiswu'
+title = "TCGA 查找表达数据"
+date = 2020-07-11
+archives = "2020/07" 
+tags = [ "data.table" ]
+summary = "transpose 转置数据并查找miRNA exp"
++++
+
+## load TCGA sample data
+###  phenodata
+```{R}
+library(data.table)
+phenodata <- fread('https://r.biogogo.top/data/TCGA-BRCA.GDC_phenotype.tsv.gz')
+names(phenodata)
+phenodata[,OS.status:=ifelse(is.na(days_to_death.demographic),"alive","dead")]
+phenodata[is.na(days_to_death.demographic), days_to_death.demographic:=days_to_last_follow_up.diagnoses]
+phenodata2 <- phenodata[,.(submitter_id.samples,OS.status,days_to_death.demographic)]
+```
+### expression data
+```{R}
+mirna <- fread('https://r.biogogo.top/data/TCGA-BRCA.mirna.tsv.100.gz')
+head(mirna)
+
+# 99 miRNA 1203 sample row X col 99*1203
+dim(mirna)
+
+str(mirna)
+```
+
+### search miRNA
+```{R}
+mirnax <- mirna[grepl('mir-107|1253',miRNA_ID)]
+```
+
+## 转置数据，首列为SampleID， 剩余列未各种基因
+### bad approach 
+```{R}
+# 错误， 数字转为字符类型
+head(t(mirnax))
+
+mirna2 <- as.data.frame( t(mirnax[,-1]))
+colnames(mirna2) <- mirnax$miRNA_ID
+head(mirna2)
+```
+
+### best approach 
+```{R}
+miRNA <- transpose(mirnax,make.names = 'miRNA_ID',keep.names = 'sampleid')
+str(miRNA)
+head(miRNA)
+```
+
+
+## merge phenodata
+```{R}
+miRNA2 <- merge(miRNA,phenodata2,by.x='sampleid',by.y = 'submitter_id.samples',all.x = T)
+head(miRNA2)
+```
+
+
+
+

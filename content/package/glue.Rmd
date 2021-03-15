@@ -1,0 +1,60 @@
++++
+author = 'asepsiswu'
+title = "glue 简单用法"
+date = 2020-06-27
+archives = "2020/06" 
+tags = [ "tips" ]
+summary = "字符串处理工具glue简单用法示例"
++++
+
+## installation 
+```r
+install.package('glue')
+```
+
+## 批量替换
+##类似于paste
+glue 用{} 执行语句
+```{R}
+library(glue)
+library(magrittr)
+library(data.table)
+## 前后的两个变量的长度要求一致
+mtcars %>% glue_data("{rownames(.)} has {hp[-1]} hp")
+mtcars %>% glue_data("{rownames(.)} has {hp} hp")
+```
+
+```{R}
+bar <- rep("bar", 5)
+glue::glue("foo{bar}")
+```
+
+### 变量在glue 内部
+```{R}
+glue('My name is {name},',
+     ' my age next year is {age + 1},',
+     ' my anniversary is {format(anniversary, "%A, %B %d, %Y")}.',
+     name = "Joe",
+     age = 40,
+     anniversary = as.Date("2001-10-12"))
+```
+### glue 用其他的分隔符进行变量eval
+```{R}
+one <- "1"
+glue("The value of $e^{2\\pi i}$ is $<<one>>$.", .open = "<<", .close = ">>")
+```
+
+### glue_collapse
+```{R}
+glue_collapse(glue("{1:10}"), width = 5)
+
+glue_collapse(1:4, ", ", last = " and ")
+```
+## glue in data.table
+```{R}
+mtcars <- as.data.table(mtcars)
+mtcars[, glue_data(.SD, "{rownames(mtcars)} has {hp} hp")]
+mtcars[, glue( "{rownames(mtcars)} has {hp} hp", .envir=.SD)]
+mtcars[, glue( "{rownames(mtcars)} has {hp} hp", hp=hp)]
+mtcars[1:5, glue( "{rownames(mtcars)[1:5]} has {hp} hp", hp=hp[1:5])]
+```

@@ -1,0 +1,44 @@
++++
+author = 'asepsiswu'
+title = "EACHI 简单用法"
+date = 2020-06-08
+archives = "2020/06" 
+tags = [ "" ]
+summary = ".EACHI 的用法"
++++
+
+## .EACHI变量的来路
+参考网页[.EACHI in data.table?](https://stackoverflow.com/questions/27004002/eachi-in-data-table)
+## example 
+```{r}
+library(data.table)
+X = data.table(x = c(1,1,1,2,2,5,6), y = 7:1, key = "x")
+Y = data.table(x = c(2,6), z = letters[2:1], key = "x")
+X[Y]
+
+X[Y,.N]
+X[Y, .(z)]
+X[Y, .N, by=.EACHI]
+```
+##  用法
+x[i, j, .EACHI] 只有*i是list或data.table*的情况下，.EACHI起作用。将i的每个元素作为一个subgroup对j进行操作
+```{r}
+# subgroup 求和
+X[Y, sum(y), by=.EACHI]
+# 对X中有Y交集的标记为'my'
+X[Y, matchTOy:='my', by=.EACHI][]
+# 对X中有Y交集的标记为X中的row number
+X[Y, matchTOy:=.I, by=.EACHI][]
+
+X[Y, smy:=sum(y), by=.EACHI][]
+
+X[Y, mx:=min(y), by=.EACHI][]
+
+
+# 输出X中有Y交集的X中的row number
+X[Y, which=T] #  which TRUE returns the row numbers of x that i matches to. If NA, returns the row numbers of i that have no match in x. By default FALSE and the rows in x that match are returned.
+X[list(1,2,6),.N,.EACHI] #wrong 
+X[list(c(1,2,6)),.N,.EACHI] 
+
+X[x %in% c(1,2,6),.N,.EACHI]
+```

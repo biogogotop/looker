@@ -1,0 +1,44 @@
++++
+author = 'asepsiswu'
+title = "R读取xls文件的各种尝试"
+#date = "2020-12-09"
+date = 2020-12-09T12:27:19+08:00
+archives = "2020/12" 
+tags = [ "" ]
+categories = [ "" ]
+summary = "readxl, xlsx, gdata和XLConnect"
++++
+
+
+```{R}
+badxls <-'/mnt/lab/PTG1/Results/tmps/bad.xls'
+
+```
+## gdata 失败
+```{R}
+gdata.xls <- gdata::read.xls(badxls,3)
+warnings()
+head(gdata.xls)
+```
+
+## read_xl 失败
+```{R echo=TRUE}
+readxl::read_excel(badxls,3)
+```
+
+## XLConnect 失败
+```{R}
+XLConnect::readWorksheetFromFile(badxls,3)
+```
+## xlsx
+
+```{R}
+xlsx::read.xlsx(badxls,3)
+
+```
+## openxlsx
+```{R}
+openxlsx::read.xlsx(badxls,3)
+```
+
+

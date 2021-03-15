@@ -1,0 +1,39 @@
++++
+author = 'asepsiswu'
+title = "拼图之gridextra "
+#date = "2020-08-07"
+date = 2020-08-07T10:46:05+08:00
+archives = "2020/08" 
+tags = [ "plot" ]
+summary = "gridExtra 简单用法"
++++
+## basic usage
+grid.arrange 用ncol或nrow 控制图的位置
+```{R}
+library(gridExtra)
+library(grid)
+gs <- lapply(1:9, function(ii) 
+  grobTree(rectGrob(gp=gpar(fill=ii, alpha=0.5)), textGrob(ii)))
+grid.arrange(grobs=gs, ncol=3,
+             top="top label", bottom="bottom\nlabel", 
+             left="left label", right="right label") 
+```
+
+## 复杂layout
+```{r}
+layout <- rbind(c(1,NA,2,3),
+             c(1,NA,4,5),
+             c(6,7,8,9))
+grid.arrange(grobs=gs, layout_matrix=layout)
+
+```
+
+## widths和heights设置比例
+值与ncol或nrow要一致
+```{r}
+grid.arrange(grobs=gs, ncol=3, widths=c(1,1,.5),heights=c(1,.5,.25))
+
+```
+
+
+

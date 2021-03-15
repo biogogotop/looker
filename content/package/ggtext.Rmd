@@ -1,0 +1,62 @@
++++
+author = 'asepsiswu'
+title = "ggtext 字体修饰"
+#date = "2020-06-18"
+date = 2020-06-18T08:27:06+08:00
+archives = "2020/06" 
+tags = [ "ggtext" ]
+summary = "ggtext 对element_text进行修饰"
++++
+
+## installation
+```R
+install.package('ggtext')
+#remotes::install_github("wilkelab/ggtext")
+```
+
+## element\_markdown用法
+```{R}
+library(tidyverse)
+library(ggtext)
+library(glue)
+library(magrittr)
+data <- tibble(
+  bactname = c("Staphylococcaceae", "Moraxella", "Streptococcus", "Acinetobacter"),
+  OTUname = c("OTU 1", "OTU 2", "OTU 3", "OTU 4"),
+  value = c(-0.5, 0.5, 2, 3)
+)
+
+# 对bactname 进行修饰
+data %<>% mutate(
+  color = c("#009E73", "#D55E00", "#0072B2", "#000000"),
+  name = glue("<i style='color:{color}'>{bactname}</i> ({OTUname})"),  #着色
+  name = fct_reorder(name, value)
+)  
+data %>%
+  ggplot(aes(value, name, fill = color)) + 
+  geom_col(alpha = 0.5) + 
+  scale_fill_identity() +
+  # **markdown加粗**   <br> 换行
+  labs(caption = "Example posted on **stackoverflow.com**<br>(using made-up data)") +
+  theme(
+    axis.text.y = element_markdown(),
+    plot.caption = element_markdown(lineheight = 1.2),
+    axis.title.x = element_textbox_simple(
+      width = NULL,
+      padding = margin(4, 4, 4, 4),
+      margin = margin(4, 0, 0, 0),
+      linetype = 1,
+      r = grid::unit(8, "pt"),
+      fill = "azure1"
+    ),
+    axis.title.y = element_textbox_simple(
+      # hjust = 0,
+      orientation = "left-rotated",
+      minwidth = unit(1, "in"),
+      maxwidth = unit(2, "in"),
+      padding = margin(4, 4, 2, 4),
+      margin = margin(0, 0, 2, 0),
+      fill = "lightsteelblue1"
+    )
+  )
+```

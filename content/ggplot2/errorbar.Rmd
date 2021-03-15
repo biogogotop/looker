@@ -1,0 +1,86 @@
++++
+author = 'asepsiswu'
+title = "errorbar"
+date = 2020-07-25
+archives = "2020/07" 
+tags = [ "" ]
+summary = "不含下半部分的errorbar， 使用ggproto创建新的Geom"
++++
+
+## bar plot
+1. 网上的solution
+```{R}
+library(ggplot2)
+ggplot(diamonds, aes(cut, price, fill = color)) +
+    stat_summary(geom = "bar", fun = mean, position = "dodge") +
+    stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge")
+```
+
+
+**只需要上半部分errorbar 怎么处理？**
+
+### 图层的上下交换 **投机取巧**
+```{R}
+ggplot(diamonds, aes(cut, price, fill = color)) +
+    stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge") +
+    stat_summary(geom = "bar", fun = mean, position = "dodge") 
+```
+
+**设置alpha就原型毕露**
+
+```{R}
+ggplot(diamonds, aes(cut, price, fill = color)) +
+    stat_summary(geom = "errorbar", fun.data = mean_se, position = "dodge") +
+    stat_summary(geom = "bar", fun = mean, position = "dodge", alpha=0.3) 
+```
+## 使用ggproto创建新的Geom ErrorbarUpper 
+1. GeomErrorbar源代码。
+
+关键就是更改draw_panel中的y。原始的draw_panel如下
+
+```{R}
+GeomErrorbar$draw_panel
+```
+2. 手工修改下半部份的x和y
+```{R}
+GeomErrorbarUpper <- ggproto('GeomErrorbarUpper', GeomErrorbar,
+       draw_panel = function(data, panel_params, coord, width = NULL, flipped_aes = FALSE) {
+         data <- flip_data(data, flipped_aes)
+         x <- as.vector(rbind(data$xmin, data$xmax, NA, data$x,    data$x  ,NA, NA, NA ))
+         y <- as.vector(rbind(data$ymax, data$ymax, NA, data$ymax, data$y ,NA, NA, NA))
+         data <- ggplot2:::new_data_frame(list(
+           x = x,
+           y = y,
+           colour = rep(data$colour, each = 8),
+           alpha = rep(data$alpha, each = 8),
+           size = rep(data$size, each = 8),
+           linetype = rep(data$linetype, each = 8),
+           group = rep(1:(nrow(data)), each = 8),
+           row.names = 1:(nrow(data) * 8)
+         ))
+         data <- flip_data(data, flipped_aes)
+         GeomPath$draw_panel(data, panel_params, coord)
+       }                           
+)
+```
+
+2. (option) 更加简单的修改
+```{R}
+dp <- as.list(GeomErrorbar)$draw_panel
+as.list(body(dp))
+body(dp)[[4]] <- quote( y <- as.vector(rbind(data$ymax, data$ymax, NA, data$ymax, data$y ,NA, NA, NA)) )
+
+GeomErrorbarUpper <- ggproto('GeomErrorbarUpper', GeomErrorbar,
+                             draw_panel = dp )
+```
+
+3. 应用GeomErrorbarUpper
+
+**geom用的是剔除Geom后的剩余字符串**
+
+```{R}
+ggplot(diamonds, aes(cut, price, fill = color)) +
+  stat_summary(geom = "bar", fun = mean, position = "dodge") +
+  stat_summary(geom = "ErrorbarUpper", fun.data = mean_se, position = "dodge")
+```
+

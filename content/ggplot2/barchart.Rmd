@@ -1,0 +1,48 @@
++++
+author = 'asepsiswu'
+title = "barchart "
+date = 2020-07-24T14:19:57+08:00
+archives = "2020/07" 
+tags = [ "plot" ]
+summary = "柱状图"
++++
+
+###  应用
+- qPCR
+- ELISA
+- cell Count
+- WB相对定量
+
+###  尺寸
+1个小图的大小要事先规划好，到时候直接拖进AI作图简单调整是最好的。
+
+根据Figure图的制定几个尺寸备用。
+
+1. 单栏图,   插图总宽度一般为 8~9 cm ，
+1. 1.5 栏图, 插图总宽度一般为 11.4~14 cm，
+1. 双栏图,   插图总宽度一般为 17.1~19 cm，
+
+## 示例
+### qPCR
+1. 过表达
+```{R}
+library(ggpval)
+dt <- data.table(ctrl=1,ov=c(6.1,5.9,6.0))
+broom::glance(t.test(dt))
+dat <- melt(dt,measure.vars =  1:2,variable.name = 'trt',value.name = 'ct')
+ barplot <- 
+    ggplot(dat,aes(x=trt,y=2^ct,fill=trt))+
+        stat_summary(fun.data = mean_se,geom = 'pointrange')+
+        stat_summary(fun.data = mean_se,geom = 'bar')
+ 
+library(ggsignif)
+   barplot +
+       geom_signif(comparisons = list(c(1,2)),test ='t.test' ,map_signif_level = TRUE)
+
+    add_pval(barplot,pairs = list(c(1,2)),test = 't.test')
+```
+1. 敲降
+
+1. 多细胞检测某个基因表达
+
+1. 多细胞株多种处理多基因

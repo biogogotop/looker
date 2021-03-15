@@ -1,0 +1,75 @@
++++
+author = 'asepsiswu'
+title = "forcats 包用法"
+#date = "2020-06-15"
+date = 2020-06-15T13:54:07+08:00
+archives = "2020/06" 
+tags = [ "forcats" ]
+summary = "forcats 用于factor"
++++
+## installation
+```R
+install.package('forcats')
+```
+
+## examples
+### default
+```{R}
+library(forcats)
+data(mtcars)
+str(mtcars)
+fact0 <- factor(mtcars$cyl)
+fact0
+```
+### fct_count
+```{R}
+fct_count(fact0)
+fct_count(fact0,prop=T)
+# If sort = TRUE, sort the result so that the most common values float to the top.
+fct_count(fact0,sort = T, prop=T)
+```
+
+###  fct_unique 
+```{R}
+fct_unique(fact0)
+```
+
+###  fct_relevel
+```{R}
+fct_relevel(fact0, c('8','6','4'))
+
+# Reorder factor levels based on the appearance in data
+fct_inorder(fact0) 
+# Reorder factor levels based on the frequency
+fct_infreq(fact0)
+
+fct_rev(fact0)
+```
+
+### Reorder factor levels based on the relationship with other variables
+```{R}
+# 根据mtcars$mpg的分组后计算得到的(max/min/mean/median)结果排序,对fact0排序
+fct_reorder(fact0, mtcars$mpg,max)
+fct_reorder(fact0, mtcars$mpg,min)
+fct_reorder(fact0, mtcars$mpg,mean)
+fct_reorder(fact0, mtcars$mpg,median)
+fct_reorder(fact0, mtcars$mpg,sd)
+```
+
+### Changing values of factor levels in R
+```{R}
+fct_collapse(fact0, `46`= c('4','6'))
+fct_collapse(fact0, "46"= c('4','6'))
+fct_collapse(fact0, "468"= c('4','6','8'))
+fct_collapse(fact0, "44"='4','666'='6' )
+fct_recode(fact0, cyl4 = "4", cyl6 = "6", cly8 = "8") 
+fct_other(fact0,keep='8')
+fct_other(fact0,drop='8')
+```
+```{R}
+x <- factor(rep(LETTERS[1:9], times = c(40, 10, 5, 27, 1, 1, 1, 1, 1)))
+x %>% table()
+x %>% fct_lump_n(3) %>% table()
+x %>% fct_lump_prop(0.10) %>% table()
+x %>% fct_lump_min(5) %>% table()
+```

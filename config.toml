@@ -1,4 +1,80 @@
-baseURL = "http://example.org/"
+baseURL = "https://www.biogogo.top/" # after https redirection
+title = "朝闻道，夕可师也"
+author = "asepsiswu"
+theme = "inkblotty"
+paginate = 16
+
 languageCode = "en-us"
-title = "My New Hugo Site"
-theme = "ananke"
+DefaultContentLanguage = "en-us"
+hasCJKLanguage = "true"
+
+enableInlineShortcodes = true
+footnoteReturnLinkContents = "^"
+disablePathToLower = true
+
+disqusShortname = ""
+googleAnalytics = ""
+
+staticDir = ["static","figure"] 
+summaryLength=150
+pluralizelisttitles = "false"
+[permalinks]
+  # Only the content under other/ will have the new URL structure
+  other = "/:year/:month/:slug/"
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  archive = "archives"
+  weight = 100
+
+[[menu.main]]
+  name = "data.table"
+  url = "/rdatatable/"
+  weight = 20
+
+[[menu.main]]
+  name = "ggplot2"
+  url = "/ggplot2/"
+  weight = 30
+
+[[menu.main]]
+  name = "R packages"
+  url = "/package/"
+  weight = 50
+
+[[menu.main]]
+  name = "Array & NGS"
+  url = "/ngs/"
+  weight = 45
+
+[[menu.main]]
+  identifier = "other"
+  name = "other"
+  url = "/other/"
+  weight = 80
+
+[Params]
+  # user-defined content
+  # postSections for displaying recent posts 
+  readmore = true
+  postSections = ["rdatatable","ggplot2","package",'ngs','other','data'] # 用于首页recent posts 
+
+[outputs]                          # c.f. https://gohugo.io/templates/output-formats/
+  home = ["HTML"]
+  page =  ["HTML"]
+  section =  ["HTML"]
+  taxonomyTerm =  ["HTML"]
+  taxonomy =  ["HTML"]
+
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.highlight]
+    # lineNos = true
+    style = "xcode"
+
+[sitemap]
+  filename = "sitemap.xml"  # c.f. https://gohugo.io/templates/sitemap-template/#configure-sitemap-xml

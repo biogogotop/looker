@@ -1,0 +1,55 @@
++++
+author = 'asepsiswu'
+title = "tableone 用法"
+#date = "2020-06-09"
+date = 2020-06-09T16:44:29+08:00
+archives = "2020/06" 
+tags = [ "tableone" ]
+summary = "tableone 2分类统计"
++++
+
+## installation
+```{R,eval=F}
+install.package('tableone')
+```
+
+## example
+```{R}
+library(tableone)
+library(survival)
+library(data.table)
+library(openxlsx)
+data(pbc)
+head(pbc)
+names(pbc)
+dat <- pbc[,-1]
+catVars <- c("status", "trt", 'sex',"ascites", "hepato", "spiders", "edema", "stage")
+
+```
+
+```{R}
+tb1 <-  CreateTableOne( data = dat, factorVars = catVars)
+print(tb1)
+summary(tb1)
+print(tb1,showAllLevels = T) # show all levels
+```
+
+
+```{R}
+tb2 <- CreateTableOne( strata = "sex" , data = dat, factorVars = catVars)
+tb2
+needFisher <- function(dat){
+  # 2分类下， 那些cell<=5 需要用fisher 检验
+  lgt5 <- sapply(dat$CatTable[[1]],function(x)any(x$freq<=5)) |
+    sapply(dat$CatTable[[2]],function(x)any(x$freq<=5))
+  names(lgt5[lgt5])
+}
+fishvar <- needFisher(tb2)
+print(tb2, exact = fishvar, showAllLevels = T)
+tb2.output <- print(tb2, exact = fishvar, showAllLevels = T,
+                   quote = FALSE, noSpaces = TRUE, printToggle = FALSE)
+tb2.output
+
+tb2.output <- data.table(tb2.output,keep.rownames = 'rowname')
+# write.xlsx(tb2.output,file = 'demo.xlsx')
+```

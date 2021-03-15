@@ -1,0 +1,50 @@
++++
+author = 'asepsiswu'
+title = "reticulate R 使用python获取股票信息 "
+#date = "2020-12-01"
+date = 2020-12-01T16:12:53+08:00
+archives = "2020/12" 
+tags = [ "" ]
+categories = [ "" ]
+summary = "R 环境中使用python"
++++
+
+## 配置python环境
+(证券宝)[http://baostock.com/baostock/index.php/%E9%A6%96%E9%A1%B5]
+```python
+pip install --user baostock -i https://pypi.tuna.tsinghua.edu.cn/simple/ --trusted-host pypi.tuna.tsinghua.edu.cn
+```
+##安装R 包
+```R
+install.package('reticulate')
+```
+
+## 示例
+###  Rstudio 中设置python
+```{R}
+library(purrr)
+library(data.table)
+library(reticulate)
+use_python('/usr/bin/python')
+# ?import
+# import baostock as bs
+bs <- import('baostock')
+bs$login()
+# bs$logout()
+```
+###  提取行业数据
+```{R}
+stock_industry <- bs$query_stock_industry()
+stock_industry.data <- stock_industry$data
+stock_industry.dt <- rbindlist(map(stock_industry.data,as.list) )
+setnames(stock_industry.dt,c('updateDate',      'code', 'code_name',    'industry',     'industryClassification'))
+stock_industry.dt <- stock_industry.dt[!code %like% '^\\w\\w.300']# 去除创业板
+stock_industry.dt
+stock_industry.dt$industry %>% table()
+```
+
+###  提取中石化信息
+```{R}
+zsh  <- bs$query_history_k_data_plus("sh.600028","date,code,open,high,low,close,preclose,volume,amount,turn,pctChg",'2018-01-01',as.character(Sys.Date()))$get_data()
+head(zsh)
+```

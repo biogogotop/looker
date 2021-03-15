@@ -1,0 +1,44 @@
++++
+author = 'asepsiswu'
+title = "survivl analysis之计算固定生存时间的p值 "
+#date = "2020-11-23"
+date = 2020-11-23T15:15:52+08:00
+archives = "2020/11" 
+tags = [ "" ]
+categories = [ "" ]
+summary = "生存分析"
++++
+# survivl analysis之计算固定生存时间的p值
+```{R}
+library(survival)
+library(survminer)
+library(purrr)
+library(data.table)
+fit0 <- survfit(Surv(time/365.25, status=='2') ~ sex, data = pbc)
+surv_pvalue(fit0)
+
+fit1 <- survfit(Surv(time/365.25, status=='2') ~ edema, data = pbc)
+surv_pvalue(fit1)
+ggsurvplot(fit1)
+
+fixed.suvival.p <- function(fit, times) {
+  sfit <- summary(fit, times = times)
+  cbn <- combn(nlevels(sfit$strata), 2 , s = F) # combination
+  cbl <- combn(levels(sfit$strata), 2 , s = F)  # combination name
+  cbl <- map_chr(cbl,  ~ paste(.x, collapse = ' vs '))
+  p.ztest <- function(sfit, idx) {
+    MEAN <- diff(sfit$surv[idx])
+    SE <- sqrt(sum(sfit$std.err[idx] ^ 2))
+    p.val <- 2 * pnorm(abs(MEAN / SE), lower.tail = FALSE)
+    data.frame(p.val,
+               'CI 0.95L' = MEAN - 1.96 * SE ,
+               'CI 0.95U' = MEAN + 1.96 * SE)
+  }
+  p <- map_dfr(cbn, ~ p.ztest(sfit, .x))
+  rownames(p) <- cbl
+  p
+}
+
+map(1:6, ~fixed.suvival.p(fit1,.x))
+
+```

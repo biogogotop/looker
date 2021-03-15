@@ -1,0 +1,87 @@
++++
+author = 'asepsiswu'
+title = "TCGA SNV 查询"
+#date = "2020-08-06"
+date = 2020-08-06T14:06:28+08:00
+archives = "2020/08" 
+tags = [ "TCGA" ]
+summary = "TCGA SNV 数据下载 查询"
++++
+## Download TCGA-ESCA SNV maf file
+[TCGA-ESCA](https://portal.gdc.cancer.gov/projects/TCGA-ESCA)
+
+filter:
+  
+- Data Category
+   simple nucleotide variation
+- Access
+   open
+
+Download manifest
+
+- gdc\_manifest\_20200806\_030553.txt
+
+### Download gdc tools
+(gdc-transfer)[https://gdc.cancer.gov/access-data/gdc-data-transfer-tool]
+
+```bash
+# 2020-08-06
+wget https://gdc.cancer.gov/files/public/file/gdc-client_v1.6.0_Ubuntu_x64-py3.7.zip
+unzip gdc-client_v1.6.0_Ubuntu_x64-py3.7.zip
+unzip gdc-client_v1.6.0_Ubuntu_x64.zip 
+mv gdc-client ~/.local/bin
+```
+
+
+### Download maf files
+```bash
+gdc-client download -m gdc_manifest_20200806_030553.txt
+```
+
+## analyze maf file
+
+### read and rbind maf files
+```{R}
+library(purrr)
+library(data.table)
+
+maf_dir <- '/mnt/TCGA/portal.gdc.cancer.gov/TCGA-ESCA/escaSNV'
+maf_file <- list.files(maf_dir,pattern =  'maf.gz$',recursive = T,full.names = T)
+maf_protocol  <- basename(maf_file) %>% stringr::str_extract(.,"(?<=TCGA.ESCA.)[a-z]+")
+
+### read and rbind maf files
+maf <- lapply(maf_file, fread)
+maf <- map2(maf,maf_protocol, ~ .x[,protocol:=.y])
+maf2 <- rbindlist(maf)
+
+head(maf2)
+```
+### example select TP53
+```{R}
+# copy and select element of vector
+dput(names(maf2))
+
+selcol <- c("Hugo_Symbol", "Entrez_Gene_Id", "Variant_Classification", 
+  "Tumor_Sample_Barcode",
+  "Mutation_Status",
+  "HGVSc",  "HGVSp_Short", "Transcript_ID", 
+  "Gene",
+  "CANONICAL", "CCDS", 
+  "RefSeq", "SIFT", "PolyPhen", 
+  "protocol")
+
+(TP53 <- maf2[Hugo_Symbol=='TP53',..selcol])
+
+TP53[,.N,.(Hugo_Symbol,protocol)]
+```
+
+## note purrr map2用法
+
+```R
+~ .x .y becomes function(.x, .y), e.g.
+map2(l, p, ~.x + .y) becomes
+map2(l, p, function(l,p) l+p)
+```
+
+
+
