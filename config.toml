@@ -63,7 +63,7 @@ pluralizelisttitles = "false"
   # user-defined content
   # postSections for displaying recent posts 
   readmore = true
-  postSections = ["rdatatable","ggplot2","package",'ngs','other','data'] # 用于首页recent posts 
+  postSections = ["rdatatable","ggplot2","package",'ngs','other','data','rpackage'] # 用于首页recent posts 
 
 [outputs]                          # c.f. https://gohugo.io/templates/output-formats/
   home = ["HTML"]
