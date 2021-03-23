@@ -2,3 +2,5 @@
 .env.build
 public/
 themes/whisper/
+content/rpackage/
+!content/rpackage/*md
