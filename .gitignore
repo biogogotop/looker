@@ -1,6 +1,6 @@
 .env
 .env.build
 public/
-themes/whisper/
-content/rpackage/
-!content/rpackage/*md
+themes/whisper
+/content/rpackage/*
+!/content/rpackage/*md
