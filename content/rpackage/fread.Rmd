@@ -1,0 +1,81 @@
++++
+author = 'asepsiswu'
+title = "数据可视化之data.table::fread 用法"
+date = 2021-03-22T13:27:31+08:00
+archives = "2021/03" 
+tags = [ "data.table","Rpackage" ]
+categories = [ "R" ]
+summary = "简单介绍一种方便快速导入数据的方法"
++++
+简单介绍一种方便快速导入数据的方法。
+相比较与基础的 read.table， data.table::fread更加快捷。
+
+```{r, setup, include=FALSE}
+library(knitr)
+library(magrittr)
+knitr::opts_chunk$set(
+  comment = ' '
+)
+```
+## 基本用法：
+0. 准备文件
+    ```{r}
+    write.csv(mtcars[1:10L,], 'mtcars.csv')
+    zip('mtcars.csv.zip', 'mtcars.csv')
+    system('gzip -k mtcars.csv')
+    writeLines(c("1, ,3","1,B,3"),"mtcar.blank.txt")
+    list.files(pattern = 'mtcar')
+    ```
+
+1. csv和txt文本文件 
+    ```{r}
+    library(data.table)
+    fread('mtcars.csv') %>% kable()
+    ```
+2. zip gzip压缩文件
+    ```{r}
+    fread('unzip -cq mtcars.csv.zip') %>% kable()
+    fread('mtcars.csv.gz') %>% kable()
+    ```
+
+3. bash的grep
+    ```{r}
+    fread('grep Merc mtcars.csv' )  %>% kable()
+    ```
+
+4. 远程网站上的数据
+    ```{r}
+    fread('https://picgo.vercel.app/mtcars.csv')  %>% kable()
+    ```
+
+
+
+## 一些参数
+1. fill
+    ```{r}
+    fread("A,B\n1,3\n2,4\n,5\n3\n")  %>% kable()
+    fread("A,B\n1,3\n2,4\n,5\n3\n",fill=T)  %>% kable()
+    ```
+
+1. select 用法
+    ```{r}
+    fread('mtcars.csv', select = 1:4 )  %>% kable()
+    fread('mtcars.csv', select = c('V1', 'mpg',"cyl","disp" ))  %>% kable()
+    ```
+2. skip用法, skip为数字跳过n行，skip为string则跳至包含string的行
+   ```{R}
+   fread('mtcars.csv', skip = 4 )  %>% kable()
+   fread('mtcars.csv', skip = 'Hornet' )  %>% kable()
+   ```
+
+
+3. na.strings 空白字符串转化为 `NA`
+    ```{r}
+    fread('mtcar.blank.txt')  %>% kable()
+    fread('mtcar.blank.txt',na.strings = "")  %>% kable()
+    ```
+
+4. colClasses, 如将列转化为字符串
+   ```{R}
+   fread('mtcars.csv', colClasses= list(character='cyl') )  %>% kable()
+   ```

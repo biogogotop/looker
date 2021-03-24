@@ -1,4 +1,7 @@
 .env
 .env.build
 public/
-themes/whisper/
+themes/whisper
+/content/rpackage/*
+!/content/rpackage/*md
+.Rproj.user

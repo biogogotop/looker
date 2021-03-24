@@ -49,16 +49,20 @@ pluralizelisttitles = "false"
   weight = 45
 
 [[menu.main]]
-  identifier = "other"
   name = "other"
-  url = "/other/"
+  url = "/misc/"
   weight = 80
+
+[[menu.main]]
+  name = 'biogogo.top'
+  url = 'https://lab.biogogo.top'
+  weight = 100
 
 [Params]
   # user-defined content
   # postSections for displaying recent posts 
   readmore = true
-  postSections = ["rdatatable","ggplot2","package",'ngs','other','data'] # 用于首页recent posts 
+  postSections = ["rdatatable","ggplot2","package",'ngs','misc','data','rpackage'] # 用于首页recent posts 
 
 [outputs]                          # c.f. https://gohugo.io/templates/output-formats/
   home = ["HTML"]

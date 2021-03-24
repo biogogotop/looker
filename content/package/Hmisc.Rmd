@@ -1,0 +1,57 @@
++++
+author = 'asepsiswu'
+title = "Hmisc describe 描述表多列"
+date = 2021-03-16T15:41:59+08:00
+archives = "2021/03" 
+tags = [ "data manipulate" ]
+categories = [ "R" ]
+summary = "describe 函数描述 临床信息 各列的情况, 用于后续变量选择"
++++
+
+##  下载示例数据
+[https://r.biogogo.top/data/TCGA-BRCA.GDC_phenotype.tsv.gz](https://r.biogogo.top/data/TCGA-BRCA.GDC_phenotype.tsv.gz)
+## 下载到本地后读取
+```{R}
+library(purrr)
+library(data.table)
+
+# download.file('https://r.biogogo.top/data/TCGA-BRCA.GDC_phenotype.tsv.gz',destfile = 'demo.tsv.gz')
+# pdata <- fread('demo.tsv.gz',na.strings = '')
+```
+
+###  直接远程读取
+```{R}
+pdata <- fread('https://r.biogogo.top/data/TCGA-BRCA.GDC_phenotype.tsv.gz', na.strings = '')
+# 列太多 不展示
+```
+### `Hmisc::describe` 描述数据
+```{R}
+desp <- Hmisc::describe(pdata)
+head(desp)
+## missing 
+## 描述数据
+```
+
+1. 缺失值严重的列, 超过  1000 （总共1284）
+```{R}
+miss_col <- keep(desp, ~ as.numeric(.x$counts['missing'])>=1000  )
+names(miss_col)
+```
+
+### 2. value 均一值太高的列， 90
+```{R}
+# distinct 值为1, 表示相同值
+uni_col <- keep(desp, ~.x$counts['distinct'] ==1)
+```
+
+###  保留列
+```{R}
+drop_col <- c(names(miss_col),names(uni_col))
+
+keep_col <- ! names(desp) %in% drop_col
+
+pdata_sub <- subset(pdata,select =  keep_col)
+
+desp[keep_col]
+
+```
