@@ -1,0 +1,49 @@
++++
+author = 'asepsiswu'
+title = "convert list of vectors to data.frame"
+date = 2021-03-23T16:54:18+08:00
+archives = "2021/03" 
+tags = [ "data" ]
+categories = [ "R" ]
+summary = "将list of vector 转化为data.frame"
++++
+
+最优选择 `rbindlist(lapply(listvector,as.data.frame.list), idcol='rowname')`
+
+其次 `do.call(rbind, listvector)`, 缺失会自动填补
+
+不太建议用 `dplyr::bind_rows`, 会丢失`list`的`name`
+
+
+```{r, message = FALSE, warnings = FALSE}
+library(knitr)
+library(purrr)
+library(data.table)
+lv1 <- lv2 <- lv3 <- asplit(mtcars[1:4,1:4],1)
+lv2[[2]] <- c('mpg'=21,'cyl'=6)
+lv3[[2]] <- c('21','6')
+lv3  %>% kable()
+```
+---
+### `rbindlist`
+```{r}
+map(lv1, as.data.frame.list) %>% rbindlist(idcol = 'rowname') %>% kable()
+map(lv2, as.data.frame.list) %>% rbindlist(fill = T) %>% kable()
+map(lv3, as.data.frame.list) %>% rbindlist(fill = T) %>% kable()
+
+```
+###  `do.call`
+```{r}
+do.call(rbind,lv1 ) %>% kable()
+do.call(rbind,lv2) %>% kable()
+do.call(rbind,lv3) %>% kable()
+```
+
+
+### `bind_rows`
+```{r}
+dplyr::bind_rows(lv1,.id='rowname') %>% kable()
+dplyr::bind_rows(lv2) %>% kable()
+dplyr::bind_rows(lv3) %>% kable()
+
+```
