@@ -1,0 +1,73 @@
++++
+author = 'asepsiswu'
+title = "split and bind"
+#date = "2021-03-24"
+date = 2021-03-24T10:16:37+08:00
+archives = "2021/03" 
+tags = [ "tidy" ]
+categories = [ "R" ]
+summary = "split vs rbindlist "
++++
+
+`split` 按行拆分`data.frame`, `rbindlist`用于合并
+
+`split.default` 按列拆分, `as.data.frame` 用于合并
+
+`Reduce` 速度较慢,可结合`rbind`和`cbind`
+
+`asplit`的结果是Matrix, 导致类型丢失,大部分情况不合适
+
+-----
+
+## split
+```{r, message=F}
+library(magrittr)
+library(knitr)
+library(data.table)
+dat <- mtcars[9:11,1:4]
+dat_list_row <- split(dat,rownames(dat))
+dat_list_row2 <- split(dat,dat$cyl)
+dat_list_col <- split.default(dat,colnames(dat))
+
+dat_list_row
+dat_list_row2
+dat_list_col
+
+as.data.frame(dat_list_col)  %>% kable()
+```
+
+## 合并
+###  rbindlist
+```{r}
+rbindlist(dat_list_row)  %>% kable()
+
+rbindlist(dat_list_row2)  %>% kable()
+
+```
+###  do.call
+```{r}
+do.call(rbind, dat_list_row)  %>% kable()
+do.call(rbind, dat_list_row2)  %>% kable()
+```
+
+###  Reduce rbind cbind
+```{r}
+Reduce(rbind, dat_list_row)  %>% kable()
+Reduce(rbind, dat_list_row2)  %>% kable()
+Reduce(cbind, dat_list_col)  %>% kable()
+```
+
+###  rbindlist 其他用法
+```{r}
+lst1 <- list(a=1, b='b',aa=12)
+lst2 <- list( b='b',ab=12)
+lst3 <- as.list(letters[1:5])
+lst4 <- as.list(LETTERS[1:5])
+
+rbindlist(list(lst1,lst2),fill = T,use.names = T)  %>% kable()
+
+rbindlist(list(lst3,lst4))  %>% kable()
+rbindlist(list(lst3,lst4),fill = T,use.names = T)  %>% kable()
+
+```
+
