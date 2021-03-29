@@ -3,7 +3,8 @@ author = 'asepsiswu'
 title = "TCGA 查找表达数据"
 date = 2020-07-11
 archives = "2020/07" 
-tags = [ "data.table" ]
+tags = [ "transform",'DB' ]
+categories = ['R']
 summary = "transpose 转置数据并查找miRNA exp"
 +++
 

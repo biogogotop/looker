@@ -4,8 +4,8 @@ title = "survivl analysis之计算固定生存时间的p值 "
 #date = "2020-11-23"
 date = 2020-11-23T15:15:52+08:00
 archives = "2020/11" 
-tags = [ "" ]
-categories = [ "" ]
+tags = [ "plot" ]
+categories = [ "R" ]
 summary = "生存分析"
 +++
 # survivl analysis之计算固定生存时间的p值

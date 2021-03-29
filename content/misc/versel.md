@@ -4,7 +4,7 @@ title = "versel dns 设置"
 date = 2021-03-15T12:20:02+08:00
 archives = "2021/03" 
 tags = [ "web" ]
-categories = [ "other" ]
+categories = [ "misc" ]
 summary = "ns1.vercel-dns.com"
 +++
 

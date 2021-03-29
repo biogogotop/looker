@@ -3,7 +3,7 @@ author = 'asepsiswu'
 title = "Hmisc describe 描述表多列"
 date = 2021-03-16T15:41:59+08:00
 archives = "2021/03" 
-tags = [ "data manipulate" ]
+tags = [ "transform" ]
 categories = [ "R" ]
 summary = "describe 函数描述 临床信息 各列的情况, 用于后续变量选择"
 +++

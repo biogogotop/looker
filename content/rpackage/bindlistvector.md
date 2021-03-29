@@ -3,7 +3,7 @@ author = 'asepsiswu'
 title = "convert list of vectors to data.frame"
 date = 2021-03-23T16:54:18+08:00
 archives = "2021/03" 
-tags = [ "data" ]
+tags = [ "transform","data.table" ]
 categories = [ "R" ]
 summary = "将list of vector 转化为data.frame"
 +++

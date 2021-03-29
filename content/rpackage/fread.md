@@ -3,7 +3,7 @@ author = 'asepsiswu'
 title = "数据可视化之data.table::fread 用法"
 date = 2021-03-22T13:27:31+08:00
 archives = "2021/03" 
-tags = [ "data.table","Rpackage" ]
+tags = [ "data.table","import" ]
 categories = [ "R" ]
 summary = "简单介绍一种方便快速导入数据的方法"
 +++

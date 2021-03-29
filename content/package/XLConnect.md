@@ -4,8 +4,8 @@ title = "XLConnect 安装"
 #date = "2020-12-09"
 date = 2020-12-09T11:39:11+08:00
 archives = "2020/12" 
-tags = [ "" ]
-categories = [ "" ]
+tags = [ "import" ]
+categories = [ "R" ]
 summary = "网络下载失败jar包的情况下,安装相应的jar包"
 +++
 

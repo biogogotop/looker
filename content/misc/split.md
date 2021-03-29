@@ -4,7 +4,7 @@ title = "split and bind"
 #date = "2021-03-24"
 date = 2021-03-24T10:16:37+08:00
 archives = "2021/03" 
-tags = [ "tidy" ]
+tags = [ "transform" ]
 categories = [ "R" ]
 summary = "split vs rbindlist "
 +++

@@ -4,9 +4,9 @@ title = "doocs 优秀的微信markdown编辑器"
 #date = "2020-12-14"
 date = 2020-12-14T14:09:02+08:00
 archives = "2020/12" 
-tags = [ "" ]
-categories = [ "" ]
-summary = "本地部署微信markdown编辑器doocs"
+tags = [ "output" ]
+categories = [ "misc" ]
+summary = "部署微信markdown编辑器doocs"
 +++
 # 应用doocs/md进行微信公众号写作
 

@@ -4,8 +4,8 @@ title = "xls convert to xls"
 #date = "2020-12-09"
 date = 2020-12-09T12:14:02+08:00
 archives = "2020/12" 
-tags = [ "" ]
-categories = [ "" ]
+tags = [ "xls",'xlsx','import' ]
+categories = [ "misc" ]
 summary = "readxl 的libxls读取错误解决方法"
 +++
 ## xls转化起因

@@ -4,7 +4,8 @@ title = "tableone 用法"
 #date = "2020-06-09"
 date = 2020-06-09T16:44:29+08:00
 archives = "2020/06" 
-tags = [ "tableone" ]
+tags = [ "transform" ]
+categories = ['R']
 summary = "tableone 2分类统计"
 +++
 
